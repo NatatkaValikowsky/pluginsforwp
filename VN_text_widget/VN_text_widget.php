@@ -69,17 +69,20 @@ class VN_widget_text extends WP_Widget
         parent::__construct('VN_widget_text', __('VN текстовый виджет'), $widget_options);
     }
 
+
     public function widget($args, $instance)
     {
-        $title = $instance['title'];
-
+        $title = apply_filters('widget_title', empty($instance['title']) ? '' : $instance['title'], $instance, $this->id_base);
+        $text = do_shortcode(apply_filters('widget_text', empty($instance['text']) ? '' : $instance['text'], $instance, $this));
         echo $args['before_widget'];
 
-        echo $args['before_title'] . $title . $args['after_title'];
+        if (!empty($title)) {
+            echo $args['before_title'] . $title . $args['after_title'];
+        } ?>
 
-        do_shortcode($instance['text']);
+        <div class="textwidget"><?php echo !empty($instance['filter']) ? wpautop($text) : $text; ?></div>
 
-        echo $args['after_widget'];
+        <?php echo $args['after_widget'];
 
     }
 
@@ -91,8 +94,7 @@ class VN_widget_text extends WP_Widget
                 'title' => __('New title', 'VN_widget_text_domain'),
                 'text' => __('', 'VN_widget_text_domain')
             )
-        );
-        ?>
+        ); ?>
 
         <p>
             <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
@@ -102,21 +104,21 @@ class VN_widget_text extends WP_Widget
                    id="<?php echo $this->get_field_id('title'); ?>"
                    name="<?php echo $this->get_field_name('title'); ?>"
                    type="text"
-                   value="<?php echo esc_attr($instance['title']); ?>"
-            >
+                   value="<?php echo esc_attr($instance['title']); ?>" />
         </p>
         <p>
             <label for="<?php echo $this->get_field_id('text'); ?>"><?php _e('Text:'); ?></label>
         </p>
         <p>
-            <input id="<?php echo $this->get_field_id('text'); ?>"
-                   name="<?php echo $this->get_field_name('text'); ?>"
-                   type="text"
-                   value="<?php echo esc_attr($instance['text']); ?>"
-            >
+            <textarea name="<?php echo $this->get_field_name('text'); ?>"
+                      id="<?php echo $this->get_field_id('text'); ?>"
+                      cols="30"
+                      rows="10"><?php echo esc_attr($instance['text']); ?></textarea>
         </p>
         <?php
     }
 }
 
 $VN_text = VN_text_class::GetInstance();
+
+?>
